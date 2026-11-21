@@ -44,6 +44,12 @@ jobs:
       - name: Instalar dependências
         run: npm install @capacitor/core @capacitor/cli @capacitor/android
         working-directory: www
+      - name: Preparar arquivos web
+        run: |
+          mkdir -p dist
+          find . -maxdepth 1 -type f \( -name "*.html" -o -name "*.js" -o -name "*.css" -o -name "*.png" -o -name "*.jpg" -o -name "*.json" \) ! -name "package*.json" ! -name "capacitor.config.json" -exec cp {} dist/ \;
+        working-directory: www
+
 
 
       - name: Criar projeto Android
