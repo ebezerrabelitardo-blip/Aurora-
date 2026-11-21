@@ -1,0 +1,39 @@
+name: Gerar IPA Aurora
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: www
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Instalar dependências
+        run: npm install @capacitor/core @capacitor/cli @capacitor/ios
+      - name: Preparar arquivos web
+        run: |
+          mkdir -p dist
+          find . -maxdepth 1 -type f \( -name "*.html" -o -name "*.js" -o -name "*.css" -o -name "*.png" -o -name "*.jpg" -o -name "*.json" \) ! -name "package*.json" ! -name "capacitor.config.json" -exec cp {} dist/ \;
+      - name: Criar projeto iOS
+        run: npx cap add ios
+      - name: Gerar ícones
+        run: npx @capacitor/assets generate --ios
+      - name: Sincronizar
+        run: npx cap sync ios
+      - name: Compilar
+        run: |
+          xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+          mkdir Payload
+          cp -r build/Build/Products/Release-iphoneos/App.app Payload/
+          zip -r Aurora.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Aurora-iOS
+          path: www/Aurora.ipa
+          if-no-files-found: error
