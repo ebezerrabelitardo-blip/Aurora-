@@ -54,13 +54,12 @@ jobs:
 
       - name: Sincronizar jogo Aurora
         run: npx cap sync android
+        working-directory: www
 
       - name: Compilar APK
-        run: |
-          cd android
-          chmod +x gradlew
-          ./gradlew --no-daemon assembleDebug
-
+        run: ./gradlew assembleDebug
+        working-directory: www/android
+        
       - name: Disponibilizar APK
         uses: actions/upload-artifact@v4
         with:
