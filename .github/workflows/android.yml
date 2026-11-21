@@ -42,12 +42,15 @@ jobs:
           sdkmanager --version
 
       - name: Instalar dependências
-        run: npm install
+        run: npm install @capacitor/core @capacitor/cli @capacitor/android
         working-directory: www
 
 
       - name: Criar projeto Android
         run: npx cap add android
+        working-directory: www
+
+
 
       - name: Sincronizar jogo Aurora
         run: npx cap sync android
