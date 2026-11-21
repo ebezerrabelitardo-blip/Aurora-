@@ -43,6 +43,8 @@ jobs:
 
       - name: Instalar dependências
         run: npm install
+        working-directory: www
+
 
       - name: Criar projeto Android
         run: npx cap add android
