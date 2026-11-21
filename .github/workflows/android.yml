@@ -4,20 +4,22 @@ name: Gerar APK Aurora
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
 
 permissions:
   contents: read
 
 jobs:
   build:
+    name: Compilar Aurora para Android
     runs-on: ubuntu-latest
 
     steps:
       - name: Baixar projeto
         uses: actions/checkout@v4
 
-      - name: Instalar Node
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -29,7 +31,15 @@ jobs:
           java-version: 21
 
       - name: Configurar Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
+        with:
+          cmdline-tools-version: 15859902
+
+      - name: Verificar ferramentas Android
+        run: |
+          java -version
+          node --version
+          sdkmanager --version
 
       - name: Instalar dependências
         run: npm install
@@ -37,17 +47,18 @@ jobs:
       - name: Criar projeto Android
         run: npx cap add android
 
-      - name: Sincronizar jogo
+      - name: Sincronizar jogo Aurora
         run: npx cap sync android
 
       - name: Compilar APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew --no-daemon assembleDebug
 
       - name: Disponibilizar APK
         uses: actions/upload-artifact@v4
         with:
           name: Aurora-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
