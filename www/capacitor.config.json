@@ -2,5 +2,6 @@
 {
   "appId": "com.dudu.aurora",
   "appName": "Aurora",
-  "webDir": "www"
+  "webDir": "."
+
 }
